@@ -205,22 +205,40 @@ def skill_layout():
 
 def branch_svg(layout, rel=""):
     rows = layout["rows"]
-    node_h, row_gap, col_gap, pad = 40, 38, 26, 30
+    node_h, row_gap, col_gap, pad = 40, 38, 20, 24
     labels = [f'{ICONS["done"]} {nd["label"]}' for nd in layout["nodes"]]
     node_w = int(max(200, max(disp_width(l) for l in labels) * 7.6 + 28))
+    step = node_w + col_gap
     depths = sorted(rows)
-    widest = max(len(rows[d]) for d in depths)
-    width = widest * node_w + (widest - 1) * col_gap + pad * 2
+
+    # 각 노드를 부모들의 평균 x 아래에 놓고, 겹치면 오른쪽으로 밀어낸다.
+    # 행을 무조건 가운데 정렬하면 여러 행을 건너뛰는 간선이 중간 노드를 관통한다.
+    xs = {}
+    for d in depths:
+        row = rows[d]
+        pref = []
+        for nd in row:
+            parents = [xs[r] for r in (nd.get("requires") or []) if r in xs]
+            pref.append(sum(parents) / len(parents) if parents else 0.0)
+        placed, cursor = {}, None
+        for i in sorted(range(len(row)), key=lambda i: pref[i]):
+            x = pref[i] if cursor is None else max(pref[i], cursor + step)
+            placed[i] = cursor = x
+        # 밀어낸 만큼 행 전체를 되돌려 부모 중심과 다시 맞춘다
+        shift = sum(pref) / len(pref) - sum(placed.values()) / len(placed)
+        for i, nd in enumerate(row):
+            xs[nd["id"]] = placed[i] + shift
+
+    left, right = min(xs.values()), max(xs.values())
+    width = int(right - left + node_w + pad * 2)
     height = 56 + len(depths) * node_h + (len(depths) - 1) * row_gap + 10
+    offset = pad + node_w / 2 - left
 
     pos = {}
     for ri, d in enumerate(depths):
-        row = rows[d]
-        total = len(row) * node_w + (len(row) - 1) * col_gap
-        start = (width - total) / 2
         y = 56 + ri * (node_h + row_gap) + node_h / 2
-        for i, nd in enumerate(row):
-            pos[nd["id"]] = (start + i * (node_w + col_gap) + node_w / 2, y)
+        for nd in rows[d]:
+            pos[nd["id"]] = (xs[nd["id"]] + offset, y)
 
     parts = [f'<svg viewBox="0 0 {width} {height}" width="{width}" height="{height}" '
              f'xmlns="http://www.w3.org/2000/svg" role="img" '

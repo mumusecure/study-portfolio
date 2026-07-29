@@ -2,6 +2,7 @@
 # status: done(해금) | learning(진행 중) | locked(잠김)
 # note: 해당 개념의 위키 노트 파일명(확장자 제외) — 있으면 노드 클릭 시 이동
 # topics: 그 노드에서 다루는 키워드 (트리 아래 목록으로 렌더링)
+# requires: 선수 노드 id (반드시 자기보다 위에 정의된 노드만 참조할 것)
 #
 # 새 분야를 공부하기 시작하면 branches 아래에 브랜치를 통째로 추가하면 된다.
 branches:
@@ -10,19 +11,26 @@ branches:
       - id: classic-modern
         label: 고전 암호와 현대 암호
         status: locked
-        topics: [Caesar Cipher (ROT), Vigenère Cipher, Vernam Cipher, XOR, Meet-in-the-Middle Attack]
+        topics: [Caesar Cipher (ROT), Vigenère Cipher, Stream Cipher, DES, Meet-in-the-Middle Attack]
 
       - id: crypto-math
         label: 암호 수학
         status: locked
         requires: [classic-modern]
-        topics: [Extended Euclidean Algorithm, Chinese Remainder Theorem (CRT), Euler's Theorem, Primality Test, Linear Algebra]
+        topics: [Extended Euclidean Algorithm, Chinese Remainder Theorem (CRT), Euler's Theorem, Fermat's Little Theorem, Linear Algebra]
 
+      # 암호 수학에서 세 갈래로 갈라진다
       - id: block-cipher
         label: 블록 암호
         status: locked
         requires: [crypto-math]
-        topics: [AES, ECB, CBC, CFB, CTR, Padding Oracle Attack]
+        topics: [AES, Substitution-Permutation Network (SPN), ECB, CBC, CTR, GCM, Padding Oracle Attack]
+
+      - id: hash-signature
+        label: 해시와 전자 서명
+        status: locked
+        requires: [crypto-math]
+        topics: [MD5, SHA-1, SHA-256, HMAC, DSA, Nonce Reuse, Hash Collision, Length Extension Attack, Birthday Paradox]
 
       - id: public-key
         label: 공개키 암호와 키 교환 알고리즘
@@ -30,20 +38,45 @@ branches:
         requires: [crypto-math]
         topics: [RSA, Diffie-Hellman Key Exchange, Common Modulus Attack, Low Exponent Attack, Hastad's Broadcast Attack, Man-in-the-Middle Attack]
 
-      - id: hash-signature
-        label: 해시와 전자 서명
-        status: locked
-        requires: [block-cipher]
-        topics: [MD5, SHA-256, DSA, Hash Collision, Length Extension Attack, Birthday Paradox, Nonce Reuse]
-
       - id: elliptic-curve
         label: 타원 곡선
         status: locked
         requires: [public-key]
         topics: [Elliptic Curves]
 
+      # 해시와 전자 서명 + 타원 곡선이 합쳐진다
       - id: ecc
         label: 타원 곡선 암호
         status: locked
-        requires: [elliptic-curve]
-        topics: [ECDH, ECDSA, Elliptic Curves]
+        requires: [hash-signature, elliptic-curve]
+        topics: [ECDSA, Elliptic Curve Diffie-Hellman Key Exchange (ECDH), Elliptic Curves]
+
+  - name: Tools
+    nodes:
+      - id: python-crypto
+        label: Python 암호 스크립팅
+        status: locked
+        topics: [PyCryptodome, gmpy2, bytes/hex 인코딩, long_to_bytes]
+
+      - id: cyberchef
+        label: CyberChef
+        status: locked
+        topics: [Base64, Hex, XOR Brute Force, Magic]
+
+      - id: pwntools
+        label: pwntools
+        status: locked
+        requires: [python-crypto]
+        topics: [remote(), process(), tube, context, cyclic]
+
+      - id: sagemath
+        label: SageMath
+        status: locked
+        requires: [python-crypto]
+        topics: [유한체, 이산로그, 격자 기저 축소, LLL]
+
+      - id: z3
+        label: z3 (SMT 솔버)
+        status: locked
+        requires: [python-crypto]
+        topics: [제약 조건 모델링, BitVec]
