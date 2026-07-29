@@ -1,10 +1,10 @@
 # 사이트 전역 설정
 nickname: 무무
 handle: mumu
-tagline: 채소 무 해커의 학습 관제 센터
+tagline: 무의 학습 관제 센터
 # 시그니처 컬러 (터미널 그린)
 color: "#33ff66"
 color_dim: "#1d8f42"
 email: mumusecure@gmail.com
-github: ""  # GitHub 계정 만들면 여기에 (예: https://github.com/mumu)
+github: "https://github.com/mumusecure"
 goal: "컴퓨터공학부 4학년 → PQC·보안을 공부하는 사람. 공부한 모든 것을 여기에 기록한다."

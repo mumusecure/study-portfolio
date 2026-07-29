@@ -9,6 +9,7 @@ import datetime
 import html
 import re
 import shutil
+import unicodedata
 from pathlib import Path
 
 import markdown
@@ -175,59 +176,100 @@ def heatmap_html(n=26):
 
 
 # ---------------------------------------------------------------- skill tree
+ICONS = {"done": "◆", "learning": "◈", "locked": "◇"}
+
+
+def disp_width(s):
+    """모노스페이스 기준 표시 폭 — 한글/전각은 2칸."""
+    return sum(2 if unicodedata.east_asian_width(ch) in ("W", "F") else 1 for ch in s)
+
+
 def skill_layout():
-    """브랜치별 노드에 row(세로 위치) 부여."""
-    cols = []
+    """브랜치별로 노드를 선수 관계 깊이에 따라 행으로 묶는다.
+
+    같은 깊이의 노드는 같은 행에 가로로 나란히 놓여 트리 모양이 된다.
+    """
+    layouts = []
     for branch in SKILLS["branches"]:
         nodes = branch.get("nodes", [])
         depth = {}
-        for nd in nodes:  # 순서상 앞에 정의된 노드만 참조한다고 가정
+        for nd in nodes:  # 선수 노드는 앞에 정의되어 있다고 가정
             reqs = nd.get("requires", []) or []
             depth[nd["id"]] = 1 + max([depth.get(r, 0) for r in reqs], default=0)
-        ordered = sorted(nodes, key=lambda nd: (depth[nd["id"]],))
-        rows = {nd["id"]: i for i, nd in enumerate(ordered)}
-        cols.append({"name": branch["name"], "nodes": ordered, "rows": rows})
-    return cols
+        rows = {}
+        for nd in nodes:
+            rows.setdefault(depth[nd["id"]], []).append(nd)
+        layouts.append({"name": branch["name"], "nodes": nodes, "rows": rows})
+    return layouts
+
+
+def branch_svg(layout, rel=""):
+    rows = layout["rows"]
+    node_h, row_gap, col_gap, pad = 40, 38, 26, 30
+    labels = [f'{ICONS["done"]} {nd["label"]}' for nd in layout["nodes"]]
+    node_w = int(max(200, max(disp_width(l) for l in labels) * 7.6 + 28))
+    depths = sorted(rows)
+    widest = max(len(rows[d]) for d in depths)
+    width = widest * node_w + (widest - 1) * col_gap + pad * 2
+    height = 56 + len(depths) * node_h + (len(depths) - 1) * row_gap + 10
+
+    pos = {}
+    for ri, d in enumerate(depths):
+        row = rows[d]
+        total = len(row) * node_w + (len(row) - 1) * col_gap
+        start = (width - total) / 2
+        y = 56 + ri * (node_h + row_gap) + node_h / 2
+        for i, nd in enumerate(row):
+            pos[nd["id"]] = (start + i * (node_w + col_gap) + node_w / 2, y)
+
+    parts = [f'<svg viewBox="0 0 {width} {height}" width="{width}" height="{height}" '
+             f'xmlns="http://www.w3.org/2000/svg" role="img" '
+             f'aria-label="{esc(layout["name"])} 스킬 트리">']
+    parts.append(f'<text x="{width/2:.0f}" y="30" text-anchor="middle" '
+                 f'class="sk-branch-label">[ {esc(layout["name"])} ]</text>')
+
+    for nd in layout["nodes"]:
+        for r in nd.get("requires", []) or []:
+            if r in pos:
+                x1, y1 = pos[r]
+                x2, y2 = pos[nd["id"]]
+                parts.append(f'<line class="sk-edge" x1="{x1:.0f}" y1="{y1 + node_h/2:.0f}" '
+                             f'x2="{x2:.0f}" y2="{y2 - node_h/2:.0f}"/>')
+
+    for nd in layout["nodes"]:
+        cx, cy = pos[nd["id"]]
+        status = nd.get("status", "locked")
+        label = f'{ICONS[status]} {nd["label"]}'
+        box = (f'<rect x="{cx - node_w/2:.0f}" y="{cy - node_h/2:.0f}" '
+               f'width="{node_w}" height="{node_h}" rx="6"/>'
+               f'<text x="{cx:.0f}" y="{cy + 4:.0f}" text-anchor="middle">{esc(label)}</text>')
+        note = nd.get("note")
+        if note and note in NOTES:
+            box = f'<a href="{rel}wiki/{note}.html">{box}</a>'
+        parts.append(f'<g class="sk-node {status}">{box}</g>')
+
+    parts.append("</svg>")
+    return "".join(parts)
 
 
 def skilltree_svg(rel=""):
-    cols = skill_layout()
-    col_w, row_h, node_w, node_h = 250, 62, 190, 36
-    max_rows = max((len(c["nodes"]) for c in cols), default=0)
-    width = 30 + col_w * len(cols)
-    height = 70 + row_h * max_rows
-    parts = [f'<svg viewBox="0 0 {width} {height}" width="{width}" height="{height}" xmlns="http://www.w3.org/2000/svg">']
+    svgs = "".join(branch_svg(la, rel) for la in skill_layout())
+    return f'<div class="skilltree-svg">{svgs}</div>'
 
-    def center(ci, row):
-        x = 30 + ci * col_w + col_w // 2
-        y = 70 + row * row_h + node_h // 2
-        return x, y
 
-    for ci, col in enumerate(cols):
-        x = 30 + ci * col_w + col_w // 2
-        parts.append(f'<text x="{x}" y="34" text-anchor="middle" class="sk-branch-label">[ {esc(col["name"])} ]</text>')
-        # edges
-        for nd in col["nodes"]:
-            for r in nd.get("requires", []) or []:
-                if r in col["rows"]:
-                    x1, y1 = center(ci, col["rows"][r])
-                    x2, y2 = center(ci, col["rows"][nd["id"]])
-                    parts.append(f'<line class="sk-edge" x1="{x1}" y1="{y1 + node_h//2}" x2="{x2}" y2="{y2 - node_h//2}"/>')
-        # nodes
-        for nd in col["nodes"]:
-            cx, cy = center(ci, col["rows"][nd["id"]])
-            rx, ry = cx - node_w // 2, cy - node_h // 2
+def skill_topics_html():
+    """각 노드에서 다루는 키워드 목록."""
+    out = []
+    for branch in SKILLS["branches"]:
+        for nd in branch.get("nodes", []):
+            topics = nd.get("topics") or []
+            if not topics:
+                continue
+            chips = "".join(f'<span class="tagchip">{esc(t)}</span>' for t in topics)
             status = nd.get("status", "locked")
-            icon = {"done": "◆", "learning": "◈", "locked": "◇"}[status]
-            label = f'{icon} {nd["label"]}'
-            box = (f'<rect x="{rx}" y="{ry}" width="{node_w}" height="{node_h}" rx="6"/>'
-                   f'<text x="{cx}" y="{cy + 4}" text-anchor="middle">{esc(label)}</text>')
-            note = nd.get("note")
-            if note and note in NOTES:
-                box = f'<a href="{rel}wiki/{note}.html">{box}</a>'
-            parts.append(f'<g class="sk-node {status}">{box}</g>')
-    parts.append("</svg>")
-    return '<div class="skilltree-svg">' + "".join(parts) + "</div>"
+            out.append(f'<div class="sk-topics"><div class="sk-topics-head">'
+                       f'{ICONS[status]} {esc(nd["label"])}</div>{chips}</div>')
+    return "".join(out)
 
 
 def skill_progress_html():
@@ -315,10 +357,14 @@ def build_logs():
 
 
 def build_skills():
+    topics = skill_topics_html()
+    topics_panel = (f'<div class="panel"><p class="panel-title">각 노드에서 다루는 것</p>{topics}</div>'
+                    if topics else "")
     body = f"""<h1 class="prompt">./skill-tree --render</h1>
-<p class="subtitle">◆ 해금 · ◈ 진행 중 · ◇ 잠김 — 노드를 클릭하면 위키 노트로 이동합니다.</p>
+<p class="subtitle">◆ 해금 · ◈ 진행 중 · ◇ 잠김 — 위키 노트가 연결된 노드는 클릭하면 이동합니다.</p>
 {skilltree_svg()}
-<div class="panel"><p class="panel-title">진행률</p>{skill_progress_html()}</div>"""
+<div class="panel"><p class="panel-title">진행률</p>{skill_progress_html()}</div>
+{topics_panel}"""
     write("skills.html", page("skill-tree", "skills.html", body))
 
 

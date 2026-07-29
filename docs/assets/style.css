@@ -205,7 +205,7 @@ li::marker { color: var(--green-dim); }
 .sk-node.learning rect { stroke: var(--green); animation: pulse 2s infinite; }
 .sk-node.learning text { fill: var(--fg); }
 .sk-node.locked rect { stroke-dasharray: 4 3; }
-.sk-node.locked text { fill: #3d4f43; }
+.sk-node.locked text { fill: var(--fg-dim); }
 .sk-node a:hover rect { fill: var(--green-dim); }
 .sk-edge { stroke: var(--border); stroke-width: 1.5; }
 .sk-branch-label { fill: var(--green-dim); font-size: 13px; letter-spacing: .08em; }
@@ -216,6 +216,11 @@ li::marker { color: var(--green-dim); }
 .sk-progress { margin: 4px 0; font-size: 13.5px; }
 .sk-progress .bar { color: var(--green); }
 .sk-progress .bar-empty { color: #26382c; }
+
+.sk-topics { margin: 0 0 16px; }
+.sk-topics:last-child { margin-bottom: 0; }
+.sk-topics-head { color: var(--fg); font-size: 14px; margin-bottom: 6px; }
+.sk-topics .tagchip { display: inline-block; margin: 0 6px 6px 0; }
 
 /* ===== wiki ===== */
 .wiki-body { max-width: 760px; }
