@@ -53,30 +53,9 @@ branches:
 
   - name: Tools
     nodes:
-      - id: python-crypto
-        label: Python 암호 스크립팅
-        status: locked
-        topics: [PyCryptodome, gmpy2, bytes/hex 인코딩, long_to_bytes]
-
-      - id: cyberchef
-        label: CyberChef
-        status: locked
-        topics: [Base64, Hex, XOR Brute Force, Magic]
-
+      # note: data/notes/pwntools.md 를 만들면 노드가 그 위키 노트로 자동 연결된다
       - id: pwntools
         label: pwntools
         status: locked
-        requires: [python-crypto]
+        note: pwntools
         topics: [remote(), process(), tube, context, cyclic]
-
-      - id: sagemath
-        label: SageMath
-        status: locked
-        requires: [python-crypto]
-        topics: [유한체, 이산로그, 격자 기저 축소, LLL]
-
-      - id: z3
-        label: z3 (SMT 솔버)
-        status: locked
-        requires: [python-crypto]
-        topics: [제약 조건 모델링, BitVec]
