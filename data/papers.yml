@@ -1,0 +1,11 @@
+# 논문 리딩 노트 — 한 편당 3줄 요약 + 내 생각 1줄이면 충분
+- title: "CRYSTALS-Kyber: A CCA-Secure Module-Lattice-Based KEM"
+  authors: Bos, Ducas, Kiltz, Lepoint, Lyubashevsky, Schanck, Schwabe, Seiler, Stehlé
+  venue: IEEE EuroS&P 2018
+  date: 2026-07-28
+  link: https://eprint.iacr.org/2017/634
+  summary:
+    - Module-LWE 기반 KEM인 Kyber를 제안 — 이후 NIST 표준 ML-KEM의 원형이 됨
+    - Ring-LWE보다 보안 마진이 크고 일반 LWE보다 효율적인 중간 지점을 택함
+    - Fujisaki-Okamoto 변환으로 CPA 보안 PKE를 CCA 보안 KEM으로 끌어올림
+  thought: 수식은 절반쯤 이해했지만 "왜 이 설계를 택했는가"의 논리 흐름이 명확해서, 설계 근거를 읽는 재미가 있었다.

@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>/var/log/fails — 무무 study log</title>
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+
+<div class="wrap">
+<div class="titlebar">
+  <span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span>
+  <span class="session">mumu@study: /var/log/fails</span>
+</div>
+<nav class="mainnav">
+<a href="index.html">~/</a>
+<a href="skills.html">skill-tree</a>
+<a href="wiki/index.html">wiki/</a>
+<a href="timeline.html">timeline</a>
+<a href="logs.html">weekly.log</a>
+<a href="fails.html" class="active">/var/log/fails</a>
+<a href="me.html">~/.config/me</a>
+<a href="about.html">whoami</a>
+</nav>
+<h1 class="prompt">less /var/log/fails</h1>
+<p class="subtitle">실패는 숨기지 않습니다. 여기 기록된 삽질이 다음 삽질을 20분쯤 줄여줍니다. (클릭해서 펼치기)</p>
+<div class="faillog"><details>
+<summary><span class="ts">2026-07-23</span> <span class="lv">[FAIL]</span> liboqs 빌드 실패 3시간</summary>
+<div class="body">
+<p><b>시도:</b> PQC 알고리즘을 직접 돌려보려고 liboqs를 소스에서 빌드. cmake 옵션을 문서 안 읽고 복붙으로 때려넣음.
+</p>
+<p><b>원인:</b> OpenSSL 경로가 시스템 기본과 homebrew 것이 섞여서 링커가 서로 다른 버전을 집어감. 에러 메시지를 처음부터 읽었으면 10분짜리 문제였다.
+</p>
+<p><b>배운 것:</b> 빌드 에러는 첫 번째 에러부터 읽는다. 마지막 에러는 대부분 첫 에러의 연쇄 반응일 뿐이다. 그리고 cmake 옵션 복붙 전에 문서를 읽자.
+</p>
+</div>
+</details></div>
+<footer>
+  <span>© 2026 무무 — 기록은 YAML로, 빌드는 build.py로.</span>
+  <span>uptime: 공부하는 중</span>
+</footer>
+</div>
+<!-- 뭔가 숨겨져 있습니다. 메인 화면의 터미널에서 ls -la -->
+<script src="assets/main.js"></script>
+</body>
+</html>

@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>timeline — 무무 study log</title>
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+
+<div class="wrap">
+<div class="titlebar">
+  <span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span>
+  <span class="session">mumu@study: timeline</span>
+</div>
+<nav class="mainnav">
+<a href="index.html">~/</a>
+<a href="skills.html">skill-tree</a>
+<a href="wiki/index.html">wiki/</a>
+<a href="timeline.html" class="active">timeline</a>
+<a href="logs.html">weekly.log</a>
+<a href="fails.html">/var/log/fails</a>
+<a href="me.html">~/.config/me</a>
+<a href="about.html">whoami</a>
+</nav>
+<h1 class="prompt">git log --graph --all</h1>
+<p class="subtitle">프로젝트·논문·삽질을 시간순으로. ● 는 진행 중.</p>
+<ul class="timeline"><li class="t-active"><span class="t-date">2026-07-29</span><span class="t-tag">project</span><div class="t-title">study-portfolio (이 사이트)</div><div class="t-desc">공부한 모든 것을 기록하는 이 사이트 자체. YAML/마크다운으로 기록하면 build.py가 정적 사이트를 생성하는 반자동 파이프라인.
+</div></li><li class=""><span class="t-date">2026-07-28</span><span class="t-tag">paper</span><div class="t-title">CRYSTALS-Kyber: A CCA-Secure Module-Lattice-Based KEM</div><div class="t-desc">Module-LWE 기반 KEM인 Kyber를 제안 — 이후 NIST 표준 ML-KEM의 원형이 됨</div></li><li class=""><span class="t-date">2026-07-23</span><span class="t-tag">fail</span><div class="t-title">liboqs 빌드 실패 3시간</div><div class="t-desc">빌드 에러는 첫 번째 에러부터 읽는다. 마지막 에러는 대부분 첫 에러의 연쇄 반응일 뿐이다. 그리고 cmake 옵션 복붙 전에 문서를 읽자.
+</div></li><li class="t-active"><span class="t-date">2026-07 ~ 진행 중</span><span class="t-tag">project</span><div class="t-title">화이트햇스쿨 3기 프로젝트 (주제 확정 전)</div><div class="t-desc">화이트햇스쿨에서 진행하는 팀 프로젝트. 현재 주제 선정 단계라 자세한 내용은 확정되면 기록 예정. 내부 자료·비공개 취약점은 이 저장소에 올리지 않는다.
+</div></li></ul>
+<footer>
+  <span>© 2026 무무 — 기록은 YAML로, 빌드는 build.py로.</span>
+  <span>uptime: 공부하는 중</span>
+</footer>
+</div>
+<!-- 뭔가 숨겨져 있습니다. 메인 화면의 터미널에서 ls -la -->
+<script src="assets/main.js"></script>
+</body>
+</html>

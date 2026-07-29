@@ -1,0 +1,14 @@
+week: 2026-W31
+range: 2026-07-27 ~ 2026-08-02
+hours: 6
+done:
+  - Kyber(ML-KEM) 동작 원리 노트 작성
+  - CRYSTALS-Kyber 논문 1회독
+  - 학습 포트폴리오 사이트 구축
+learned:
+  - Kyber의 핵심이 Module-LWE라는 것, 그리고 왜 "격자"가 어려운 문제인지
+  - 논문은 한 번에 다 이해하려 하지 말고 3줄 요약부터 하는 게 낫다
+fails: []
+next:
+  - Dilithium 서명 스킴 공부 시작
+  - 화이트햇스쿨 프로젝트 역할 정리해서 기록

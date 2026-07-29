@@ -1,0 +1,27 @@
+# ~/.config/me — 취향 코너 (dotfiles 컨셉으로 렌더링됨)
+# 여기는 자조적 유머 허용 구역. 마음껏 수정하세요.
+sections:
+  - key: music
+    title: music.conf
+    items:
+      - "플레이리스트는 '공부용'과 '공부 안 하고 듣는 용'으로 나뉘는데 후자가 3배 길다"
+      - "# TODO: 좋아하는 가수/장르 채우기"
+  - key: games
+    title: games.conf
+    items:
+      - "게임할 시간에 공부하자고 다짐한 지 4년째 (다짐만 4년째)"
+      - "# TODO: 인생 게임 목록 채우기"
+  - key: books
+    title: books.conf
+    items:
+      - "사놓고 안 읽은 책 스택이 자료구조 수업의 스택보다 깊다"
+      - "# TODO: 인생 책 목록 채우기"
+  - key: travel
+    title: travel.log
+    items:
+      - "# TODO: 다녀온 곳, 가고 싶은 곳 기록"
+  - key: daily
+    title: daily.log
+    items:
+      - "데이트 코스 짜는 능력치가 알고리즘 실력보다 빨리 성장 중"
+      - "# TODO: 일상 기록"

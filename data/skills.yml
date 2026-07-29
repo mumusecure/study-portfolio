@@ -1,0 +1,68 @@
+# 스킬 트리 — 공부할수록 노드가 해금된다
+# status: done(해금) | learning(진행 중) | locked(잠김)
+# note: 해당 개념의 위키 노트 파일명(확장자 제외) — 있으면 노드 클릭 시 이동
+branches:
+  - name: 암호학 / PQC
+    nodes:
+      - id: modular
+        label: 모듈러 연산
+        status: done
+      - id: classic-crypto
+        label: 고전 공개키 (RSA/ECC)
+        status: done
+        requires: [modular]
+      - id: pqc-overview
+        label: PQC 큰 그림
+        status: done
+        note: pqc-overview
+        requires: [classic-crypto]
+      - id: lattice
+        label: 격자 이론 / LWE
+        status: learning
+        note: lattice-basics
+        requires: [pqc-overview]
+      - id: kyber
+        label: ML-KEM (Kyber)
+        status: learning
+        note: kyber
+        requires: [lattice]
+      - id: dilithium
+        label: ML-DSA (Dilithium)
+        status: locked
+        requires: [lattice]
+      - id: pqc-impl
+        label: PQC 구현 (liboqs)
+        status: locked
+        requires: [kyber]
+
+  - name: 시스템 / 해킹
+    nodes:
+      - id: linux
+        label: 리눅스 기초
+        status: done
+      - id: web-hacking
+        label: 웹 해킹 기초
+        status: learning
+        requires: [linux]
+      - id: pwnable
+        label: 시스템 해킹 (pwnable)
+        status: locked
+        requires: [linux]
+      - id: whs-project
+        label: 화이트햇스쿨 프로젝트
+        status: learning
+        requires: [web-hacking]
+
+  - name: CS 기초
+    nodes:
+      - id: datastructure
+        label: 자료구조/알고리즘
+        status: done
+      - id: os
+        label: 운영체제
+        status: done
+        requires: [datastructure]
+      - id: network
+        label: 네트워크
+        status: learning
+        requires: [os]

@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ML-KEM (Kyber) 동작 원리 — 무무 study log</title>
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+
+<div class="wrap">
+<div class="titlebar">
+  <span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span>
+  <span class="session">mumu@study: ML-KEM (Kyber) 동작 원리</span>
+</div>
+<nav class="mainnav">
+<a href="../index.html">~/</a>
+<a href="../skills.html">skill-tree</a>
+<a href="../wiki/index.html" class="active">wiki/</a>
+<a href="../timeline.html">timeline</a>
+<a href="../logs.html">weekly.log</a>
+<a href="../fails.html">/var/log/fails</a>
+<a href="../me.html">~/.config/me</a>
+<a href="../about.html">whoami</a>
+</nav>
+<h1 class="prompt">cat wiki/kyber.md</h1>
+<h1>ML-KEM (Kyber) 동작 원리</h1>
+<p class="subtitle">2026-07-28 <span class="tagchip">암호학</span><span class="tagchip">PQC</span></p>
+<div class="wiki-body"><h2>한 줄 요약</h2>
+<p>ML-KEM은 Module-LWE 문제에 기반한 <strong>키 캡슐화 메커니즘(KEM)</strong> — 두 사람이 안전하지 않은 채널로 대칭키를 합의하게 해준다.</p>
+<h2>KEM의 3단계</h2>
+<ol>
+<li><strong>KeyGen</strong>: 공개키 <code>pk</code>, 비밀키 <code>sk</code> 생성</li>
+<li><strong>Encaps(pk)</strong>: 공유 비밀 <code>K</code>와 암호문 <code>c</code> 생성</li>
+<li><strong>Decaps(sk, c)</strong>: 암호문에서 같은 <code>K</code> 복원</li>
+</ol>
+<h2>왜 Module-LWE인가</h2>
+<p>일반 LWE는 안전하지만 키가 크고 느리다. Ring-LWE는 빠르지만 구조가 많아 불안하다. Module-LWE는 그 중간 — 다항식 환 위의 작은 행렬을 써서 속도와 보안의 균형을 잡는다. 기반 이론은 <a class="wikilink" href="lattice-basics.html">격자 기반 암호 기초</a> 참고.</p>
+<h2>파라미터</h2>
+<table>
+<thead>
+<tr>
+<th>세트</th>
+<th>보안 수준</th>
+<th>공개키 크기</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ML-KEM-512</td>
+<td>AES-128급</td>
+<td>800 B</td>
+</tr>
+<tr>
+<td>ML-KEM-768</td>
+<td>AES-192급</td>
+<td>1,184 B</td>
+</tr>
+<tr>
+<td>ML-KEM-1024</td>
+<td>AES-256급</td>
+<td>1,568 B</td>
+</tr>
+</tbody>
+</table>
+<p>TLS에 넣어도 부담이 크지 않은 크기라 이미 브라우저(X25519MLKEM768 하이브리드)에 배포되고 있다.</p>
+<p>PQC 전체 지형은 <a class="wikilink" href="pqc-overview.html">PQC 큰 그림</a>에서.</p></div>
+<div class="backlinks panel"><p class="panel-title">이 노트로 연결되는 노트</p><ul><li><a href="lattice-basics.html">격자 기반 암호 기초</a></li><li><a href="pqc-overview.html">PQC 큰 그림</a></li></ul></div>
+<p><a href="index.html">← 노트 목록</a></p>
+<footer>
+  <span>© 2026 무무 — 기록은 YAML로, 빌드는 build.py로.</span>
+  <span>uptime: 공부하는 중</span>
+</footer>
+</div>
+<!-- 뭔가 숨겨져 있습니다. 메인 화면의 터미널에서 ls -la -->
+<script src="../assets/main.js"></script>
+</body>
+</html>

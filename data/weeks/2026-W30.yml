@@ -1,0 +1,15 @@
+week: 2026-W30
+range: 2026-07-20 ~ 2026-07-26
+hours: 8
+done:
+  - PQC가 뭔지 큰 그림 잡기 — NIST 표준화 현황 훑어보기
+  - 격자 기반 암호의 기초 개념 정리 (LWE 문제)
+  - 화이트햇스쿨 프로젝트 주제 회의 참여
+learned:
+  - RSA/ECC가 양자컴퓨터(쇼어 알고리즘)에 왜 깨지는지 이해했다
+  - NIST가 표준화한 ML-KEM(Kyber), ML-DSA(Dilithium)의 위치를 알게 됐다
+fails:
+  - liboqs 빌드 실패 — data/fails.yml 참고
+next:
+  - Kyber 원리 노트 정리
+  - 논문 1편 읽기

@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>weekly.log — 무무 study log</title>
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+
+<div class="wrap">
+<div class="titlebar">
+  <span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span>
+  <span class="session">mumu@study: weekly.log</span>
+</div>
+<nav class="mainnav">
+<a href="index.html">~/</a>
+<a href="skills.html">skill-tree</a>
+<a href="wiki/index.html">wiki/</a>
+<a href="timeline.html">timeline</a>
+<a href="logs.html" class="active">weekly.log</a>
+<a href="fails.html">/var/log/fails</a>
+<a href="me.html">~/.config/me</a>
+<a href="about.html">whoami</a>
+</nav>
+<h1 class="prompt">tail -f weekly.log</h1>
+<p class="subtitle">매주 15분, 다듬지 않고 기록합니다. 최신순.</p>
+<div class="week-entry"><h3>2026-W31</h3><div class="week-meta">2026-07-27 ~ 2026-08-02 · 6h</div><h4>한 일</h4><ul><li>Kyber(ML-KEM) 동작 원리 노트 작성</li><li>CRYSTALS-Kyber 논문 1회독</li><li>학습 포트폴리오 사이트 구축</li></ul><h4>배운 것</h4><ul><li>Kyber의 핵심이 Module-LWE라는 것, 그리고 왜 "격자"가 어려운 문제인지</li><li>논문은 한 번에 다 이해하려 하지 말고 3줄 요약부터 하는 게 낫다</li></ul><h4>다음 주</h4><ul><li>Dilithium 서명 스킴 공부 시작</li><li>화이트햇스쿨 프로젝트 역할 정리해서 기록</li></ul></div><div class="week-entry"><h3>2026-W30</h3><div class="week-meta">2026-07-20 ~ 2026-07-26 · 8h</div><h4>한 일</h4><ul><li>PQC가 뭔지 큰 그림 잡기 — NIST 표준화 현황 훑어보기</li><li>격자 기반 암호의 기초 개념 정리 (LWE 문제)</li><li>화이트햇스쿨 프로젝트 주제 회의 참여</li></ul><h4>배운 것</h4><ul><li>RSA/ECC가 양자컴퓨터(쇼어 알고리즘)에 왜 깨지는지 이해했다</li><li>NIST가 표준화한 ML-KEM(Kyber), ML-DSA(Dilithium)의 위치를 알게 됐다</li></ul><h4>삽질</h4><ul><li>liboqs 빌드 실패 — data/fails.yml 참고</li></ul><h4>다음 주</h4><ul><li>Kyber 원리 노트 정리</li><li>논문 1편 읽기</li></ul></div>
+<footer>
+  <span>© 2026 무무 — 기록은 YAML로, 빌드는 build.py로.</span>
+  <span>uptime: 공부하는 중</span>
+</footer>
+</div>
+<!-- 뭔가 숨겨져 있습니다. 메인 화면의 터미널에서 ls -la -->
+<script src="assets/main.js"></script>
+</body>
+</html>

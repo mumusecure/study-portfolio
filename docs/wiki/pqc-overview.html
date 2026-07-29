@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PQC 큰 그림 — 무무 study log</title>
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+
+<div class="wrap">
+<div class="titlebar">
+  <span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span>
+  <span class="session">mumu@study: PQC 큰 그림</span>
+</div>
+<nav class="mainnav">
+<a href="../index.html">~/</a>
+<a href="../skills.html">skill-tree</a>
+<a href="../wiki/index.html" class="active">wiki/</a>
+<a href="../timeline.html">timeline</a>
+<a href="../logs.html">weekly.log</a>
+<a href="../fails.html">/var/log/fails</a>
+<a href="../me.html">~/.config/me</a>
+<a href="../about.html">whoami</a>
+</nav>
+<h1 class="prompt">cat wiki/pqc-overview.md</h1>
+<h1>PQC 큰 그림</h1>
+<p class="subtitle">2026-07-21 <span class="tagchip">암호학</span><span class="tagchip">PQC</span></p>
+<div class="wiki-body"><h2>왜 PQC인가</h2>
+<p>현재 인터넷을 지키는 공개키 암호(RSA, ECC)는 <strong>소인수분해</strong>와 <strong>이산로그</strong> 문제의 어려움에 기대고 있다. 그런데 쇼어(Shor) 알고리즘을 돌릴 수 있는 대규모 양자컴퓨터가 등장하면 이 두 문제는 다항 시간에 풀린다. 즉, 지금의 공개키 암호는 전부 깨진다.</p>
+<p>PQC(Post-Quantum Cryptography, 양자내성암호)는 양자컴퓨터로도 풀기 어렵다고 믿어지는 수학 문제 위에 다시 암호를 세우는 작업이다.</p>
+<h2>NIST 표준화 현황</h2>
+<ul>
+<li><strong>ML-KEM</strong> (구 Kyber) — 키 캡슐화. → <a class="wikilink" href="kyber.html">ML-KEM (Kyber) 동작 원리</a></li>
+<li><strong>ML-DSA</strong> (구 Dilithium) — 전자서명</li>
+<li><strong>SLH-DSA</strong> (구 SPHINCS+) — 해시 기반 전자서명</li>
+</ul>
+<p>ML-KEM과 ML-DSA는 둘 다 격자 문제에 기반한다. → <a class="wikilink" href="lattice-basics.html">격자 기반 암호 기초</a></p>
+<h2>"지금 수확, 나중에 해독" (Harvest Now, Decrypt Later)</h2>
+<p>양자컴퓨터가 아직 없어도 문제는 이미 시작됐다. 공격자가 암호화된 트래픽을 지금 저장해뒀다가 나중에 양자컴퓨터로 해독할 수 있기 때문. 그래서 수명이 긴 비밀(의료 기록, 국가 기밀)일수록 PQC 전환이 급하다.</p></div>
+<div class="backlinks panel"><p class="panel-title">이 노트로 연결되는 노트</p><ul><li><a href="kyber.html">ML-KEM (Kyber) 동작 원리</a></li><li><a href="lattice-basics.html">격자 기반 암호 기초</a></li></ul></div>
+<p><a href="index.html">← 노트 목록</a></p>
+<footer>
+  <span>© 2026 무무 — 기록은 YAML로, 빌드는 build.py로.</span>
+  <span>uptime: 공부하는 중</span>
+</footer>
+</div>
+<!-- 뭔가 숨겨져 있습니다. 메인 화면의 터미널에서 ls -la -->
+<script src="../assets/main.js"></script>
+</body>
+</html>

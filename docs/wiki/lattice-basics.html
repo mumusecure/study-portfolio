@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>격자 기반 암호 기초 — 무무 study log</title>
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+
+<div class="wrap">
+<div class="titlebar">
+  <span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span>
+  <span class="session">mumu@study: 격자 기반 암호 기초</span>
+</div>
+<nav class="mainnav">
+<a href="../index.html">~/</a>
+<a href="../skills.html">skill-tree</a>
+<a href="../wiki/index.html" class="active">wiki/</a>
+<a href="../timeline.html">timeline</a>
+<a href="../logs.html">weekly.log</a>
+<a href="../fails.html">/var/log/fails</a>
+<a href="../me.html">~/.config/me</a>
+<a href="../about.html">whoami</a>
+</nav>
+<h1 class="prompt">cat wiki/lattice-basics.md</h1>
+<h1>격자 기반 암호 기초</h1>
+<p class="subtitle">2026-07-23 <span class="tagchip">암호학</span><span class="tagchip">PQC</span><span class="tagchip">수학</span></p>
+<div class="wiki-body"><h2>격자(Lattice)란</h2>
+<p>격자는 기저 벡터들의 정수 계수 선형결합으로 만들어지는 점들의 집합이다. 2차원이면 모눈종이의 교차점 같은 그림을 떠올리면 된다.</p>
+<p>격자 위에서 어려운 문제들:</p>
+<ul>
+<li><strong>SVP</strong> (Shortest Vector Problem): 격자에서 가장 짧은 0이 아닌 벡터 찾기</li>
+<li><strong>CVP</strong> (Closest Vector Problem): 임의의 점에서 가장 가까운 격자점 찾기</li>
+</ul>
+<p>차원이 수백 차원으로 커지면 이 문제들은 양자컴퓨터로도 어렵다고 믿어진다.</p>
+<h2>LWE (Learning With Errors)</h2>
+<p>격자 암호의 실질적인 기반. 연립방정식 <code>A·s + e = b</code>에서 작은 오차 <code>e</code>를 섞어놓으면, <code>A</code>와 <code>b</code>를 알아도 비밀 <code>s</code>를 복원하기 어렵다는 문제다.</p>
+<p>오차 하나 섞었을 뿐인데 문제가 어려워진다는 게 처음엔 직관적이지 않았는데, 오차가 누적되면서 가우스 소거법 같은 정공법이 무너진다는 걸 이해하고 납득했다.</p>
+<p>ML-KEM은 LWE의 변형인 <strong>Module-LWE</strong>를 쓴다. → <a class="wikilink" href="kyber.html">ML-KEM (Kyber) 동작 원리</a></p>
+<p>전체 맥락은 <a class="wikilink" href="pqc-overview.html">PQC 큰 그림</a> 참고.</p></div>
+<div class="backlinks panel"><p class="panel-title">이 노트로 연결되는 노트</p><ul><li><a href="kyber.html">ML-KEM (Kyber) 동작 원리</a></li><li><a href="pqc-overview.html">PQC 큰 그림</a></li></ul></div>
+<p><a href="index.html">← 노트 목록</a></p>
+<footer>
+  <span>© 2026 무무 — 기록은 YAML로, 빌드는 build.py로.</span>
+  <span>uptime: 공부하는 중</span>
+</footer>
+</div>
+<!-- 뭔가 숨겨져 있습니다. 메인 화면의 터미널에서 ls -la -->
+<script src="../assets/main.js"></script>
+</body>
+</html>
