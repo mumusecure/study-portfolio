@@ -26,7 +26,7 @@
 <h1 class="prompt">cat wiki/lattice-basics.md</h1>
 <h1>격자 기반 암호 기초</h1>
 <p class="subtitle">2026-07-23 <span class="tagchip">암호학</span><span class="tagchip">PQC</span><span class="tagchip">수학</span></p>
-<div class="wiki-body"><h2>격자(Lattice)란</h2>
+<div class="wiki-body"><h2 id="격자lattice란">격자(Lattice)란</h2>
 <p>격자는 기저 벡터들의 정수 계수 선형결합으로 만들어지는 점들의 집합이다. 2차원이면 모눈종이의 교차점 같은 그림을 떠올리면 된다.</p>
 <p>격자 위에서 어려운 문제들:</p>
 <ul>
@@ -34,7 +34,7 @@
 <li><strong>CVP</strong> (Closest Vector Problem): 임의의 점에서 가장 가까운 격자점 찾기</li>
 </ul>
 <p>차원이 수백 차원으로 커지면 이 문제들은 양자컴퓨터로도 어렵다고 믿어진다.</p>
-<h2>LWE (Learning With Errors)</h2>
+<h2 id="lwe-learning-with-errors">LWE (Learning With Errors)</h2>
 <p>격자 암호의 실질적인 기반. 연립방정식 <code>A·s + e = b</code>에서 작은 오차 <code>e</code>를 섞어놓으면, <code>A</code>와 <code>b</code>를 알아도 비밀 <code>s</code>를 복원하기 어렵다는 문제다.</p>
 <p>오차 하나 섞었을 뿐인데 문제가 어려워진다는 게 처음엔 직관적이지 않았는데, 오차가 누적되면서 가우스 소거법 같은 정공법이 무너진다는 걸 이해하고 납득했다.</p>
 <p>ML-KEM은 LWE의 변형인 <strong>Module-LWE</strong>를 쓴다. → <a class="wikilink" href="kyber.html">ML-KEM (Kyber) 동작 원리</a></p>

@@ -303,3 +303,18 @@ footer {
 ::-webkit-scrollbar { width: 10px; height: 10px; }
 ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 5px; }
 ::-webkit-scrollbar-track { background: var(--bg); }
+
+/* 옵시디언에서 넘어온 노트 요소 */
+.wiki-body img {
+  max-width: 100%;
+  height: auto;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  margin: 12px 0;
+}
+.wikilink-missing {
+  color: var(--red);
+  border-bottom: 1px dotted var(--red);
+  opacity: .85;
+}
+.wiki-body h2, .wiki-body h3 { scroll-margin-top: 20px; }

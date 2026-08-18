@@ -115,30 +115,99 @@ def load_weeks():
     return weeks
 
 
+# 옵시디언 문법: [[노트]] · [[노트|별칭]] · [[노트#소제목]] · ![[이미지.png]]
+WIKILINK_RE = re.compile(r"(!?)\[\[([^\[\]#|]+)(?:#([^\[\]|]+))?(?:\|([^\[\]]+))?\]\]")
+CALLOUT_RE = re.compile(r"^>\s*\[!(\w+)\][+-]?\s*(.*)$", re.M)
+IMG_EXT = (".png", ".jpg", ".jpeg", ".gif", ".svg", ".webp")
+
+
+def slugify(name):
+    """파일명/제목 → 슬러그. 한글은 그대로 두고 공백만 하이픈으로 바꾼다."""
+    s = re.sub(r"[\s_]+", "-", str(name).strip().lower())
+    s = re.sub(r"[^\w\-]", "", s)
+    return re.sub(r"-{2,}", "-", s).strip("-") or "note"
+
+
+def first_heading(body):
+    m = re.search(r"^#{1,3}\s+(.+)$", body, re.M)
+    return m.group(1).strip() if m else ""
+
+
+def convert_callouts(text):
+    """옵시디언 콜아웃 `> [!note] 제목` → 제목이 붙은 인용구."""
+    def repl(m):
+        title = m.group(2).strip()
+        return f"> **{m.group(1).upper()}**" + (f" — {title}" if title else "")
+    return CALLOUT_RE.sub(repl, text)
+
+
 def load_notes():
-    """마크다운 노트: frontmatter 파싱 + [[링크]] 수집."""
-    notes = {}
-    for f in sorted((DATA / "notes").glob("*.md")):
+    """옵시디언 볼트(data/notes)를 읽는다.
+
+    - 하위 폴더까지 훑되 `.`/`_` 로 시작하는 폴더는 건너뛴다 (설정·첨부 보관용)
+    - frontmatter 에 draft: true 인 노트는 사이트로 내보내지 않는다
+    - 옵시디언은 파일명이나 제목으로 링크하므로, 파일명·제목·슬러그를
+      같은 노트로 이어주는 별칭 색인을 함께 만든다
+    """
+    notes, alias, attach = {}, {}, {}
+    root = DATA / "notes"
+    if not root.exists():
+        return notes, alias, attach
+
+    for f in root.rglob("*"):
+        if f.is_file() and f.suffix.lower() in IMG_EXT:
+            attach.setdefault(f.name, f)
+
+    for f in sorted(root.rglob("*.md")):
+        parts = f.relative_to(root).parts
+        if any(p.startswith((".", "_")) for p in parts[:-1]):
+            continue
         text = f.read_text(encoding="utf-8")
         meta, body = {}, text
-        m = re.match(r"^---\n(.*?)\n---\n(.*)$", text, re.S)
+        m = re.match(r"^---\r?\n(.*?)\r?\n---\r?\n?(.*)$", text, re.S)
         if m:
-            meta = yaml.safe_load(m.group(1)) or {}
+            meta = yaml.safe_load(m.group(1))
             body = m.group(2)
-        nid = f.stem
-        notes[nid] = {
-            "id": nid,
-            "title": meta.get("title", nid),
-            "tags": meta.get("tags", []),
+        if not isinstance(meta, dict):
+            meta = {}
+        if meta.get("draft"):
+            continue
+
+        slug = slugify(meta.get("slug") or f.stem)
+        title = str(meta.get("title") or first_heading(body) or f.stem)
+        # 옵시디언에선 본문 맨 위에 `# 제목`을 쓰는 습관이 흔하다.
+        # 사이트가 제목을 따로 찍으므로 중복되는 첫 H1 은 본문에서 걷어낸다.
+        body = re.sub(r"^\s*#\s+" + re.escape(title) + r"\s*$", "", body, count=1, flags=re.M).lstrip("\n")
+        tags = meta.get("tags") or []
+        if isinstance(tags, str):
+            tags = [tags]
+        notes[slug] = {
+            "id": slug,
+            "title": title,
+            "tags": tags,
             "date": str(meta.get("date", "")),
             "body": body,
-            "links": re.findall(r"\[\[([\w-]+)\]\]", body),
+            "links": [],
         }
-    return notes
+        for key in (f.stem, title, slug):
+            alias.setdefault(str(key).strip().lower(), slug)
+            alias.setdefault(slugify(key), slug)
+
+    for slug, note in notes.items():
+        seen = []
+        for embed, target, _heading, _label in WIKILINK_RE.findall(note["body"]):
+            if embed:
+                continue
+            t = alias.get(target.strip().lower()) or alias.get(slugify(target))
+            if t and t != slug and t not in seen:
+                seen.append(t)
+        note["links"] = seen
+
+    return notes, alias, attach
 
 
 WEEKS = load_weeks()
-NOTES = load_notes()
+NOTES, NOTE_ALIAS, ATTACHMENTS = load_notes()
 PAPERS = load_yaml(DATA / "papers.yml") or []
 PROJECTS = [p for p in (load_yaml(DATA / "projects.yml") or []) if p.get("public", False)]
 FAILS = load_yaml(DATA / "fails.yml") or []
@@ -387,15 +456,33 @@ def build_skills():
 
 
 def build_wiki():
-    md = markdown.Markdown(extensions=["tables", "fenced_code"])
+    # toc: 소제목에 id 를 달아 [[노트#소제목]] 앵커가 동작하게 한다
+    md = markdown.Markdown(
+        extensions=["tables", "fenced_code", "toc"],
+        extension_configs={"toc": {"slugify": lambda value, sep: slugify(value)}})
+    used_images = {}
 
     def resolve_links(text):
+        """옵시디언 링크/임베드를 사이트용 HTML로 바꾼다."""
         def repl(m):
-            nid = m.group(1)
-            if nid in NOTES:
-                return f'<a class="wikilink" href="{nid}.html">{esc(NOTES[nid]["title"])}</a>'
-            return f'<span class="wikilink-missing">[[{nid}]]</span>'
-        return re.sub(r"\[\[([\w-]+)\]\]", repl, text)
+            embed, target = m.group(1), m.group(2).strip()
+            heading, label = m.group(3), m.group(4)
+
+            if embed and Path(target).suffix.lower() in IMG_EXT:
+                src = ATTACHMENTS.get(Path(target).name)
+                if not src:
+                    return f'<span class="wikilink-missing">![[{esc(target)}]]</span>'
+                safe = slugify(src.stem) + src.suffix.lower()
+                used_images[safe] = src
+                return f'<img src="../assets/notes/{safe}" alt="{esc(label or src.stem)}">'
+
+            slug = NOTE_ALIAS.get(target.lower()) or NOTE_ALIAS.get(slugify(target))
+            if slug and slug in NOTES:
+                anchor = f"#{slugify(heading)}" if heading else ""
+                return (f'<a class="wikilink" href="{slug}.html{anchor}">'
+                        f'{esc(label or NOTES[slug]["title"])}</a>')
+            return f'<span class="wikilink-missing">[[{esc(label or target)}]]</span>'
+        return WIKILINK_RE.sub(repl, text)
 
     backlinks = {nid: [] for nid in NOTES}
     for nid, note in NOTES.items():
@@ -416,7 +503,7 @@ def build_wiki():
     # each note
     for nid, note in NOTES.items():
         md.reset()
-        content = md.convert(resolve_links(note["body"]))
+        content = md.convert(convert_callouts(resolve_links(note["body"])))
         bl = backlinks.get(nid, [])
         bl_html = ""
         if bl:
@@ -430,6 +517,13 @@ def build_wiki():
 {bl_html}
 <p><a href="index.html">← 노트 목록</a></p>"""
         write(f"wiki/{nid}.html", page(note["title"], "wiki/index.html", body, rel="../"))
+
+    if used_images:
+        dest = DOCS / "assets" / "notes"
+        dest.mkdir(parents=True, exist_ok=True)
+        for name, src_path in sorted(used_images.items()):
+            shutil.copy2(src_path, dest / name)
+            print(f"  copy  assets/notes/{name}")
 
 
 def norm_date(s):
@@ -560,6 +654,9 @@ def copy_assets():
 def main():
     print("mumu-os build 시작")
     DOCS.mkdir(exist_ok=True)
+    # 노트를 지우거나 이름을 바꿨을 때 옛 결과물이 사이트에 남지 않도록 먼저 비운다
+    shutil.rmtree(DOCS / "wiki", ignore_errors=True)
+    shutil.rmtree(DOCS / "assets" / "notes", ignore_errors=True)
     copy_assets()
     build_index()
     build_logs()

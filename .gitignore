@@ -1,2 +1,8 @@
 __pycache__/
 .DS_Store
+
+# 옵시디언 (볼트 = data/notes)
+.obsidian/
+.trash/
+data/notes/.obsidian/
+.venv/
