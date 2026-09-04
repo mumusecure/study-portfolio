@@ -128,8 +128,13 @@ def slugify(name):
     return re.sub(r"-{2,}", "-", s).strip("-") or "note"
 
 
-def first_heading(body):
-    m = re.search(r"^#{1,3}\s+(.+)$", body, re.M)
+def first_h1(body):
+    """본문 맨 위의 `# 제목`만 제목 후보로 본다.
+
+    `##` 이하는 문단 소제목이므로 제목으로 쓰면 안 된다.
+    (템플릿의 첫 항목이 통째로 노트 제목이 되어버린다)
+    """
+    m = re.search(r"^#\s+(.+)$", body, re.M)
     return m.group(1).strip() if m else ""
 
 
@@ -174,18 +179,23 @@ def load_notes():
             continue
 
         slug = slugify(meta.get("slug") or f.stem)
-        title = str(meta.get("title") or first_heading(body) or f.stem)
+        title = str(meta.get("title") or first_h1(body) or f.stem)
         # 옵시디언에선 본문 맨 위에 `# 제목`을 쓰는 습관이 흔하다.
         # 사이트가 제목을 따로 찍으므로 중복되는 첫 H1 은 본문에서 걷어낸다.
         body = re.sub(r"^\s*#\s+" + re.escape(title) + r"\s*$", "", body, count=1, flags=re.M).lstrip("\n")
         tags = meta.get("tags") or []
         if isinstance(tags, str):
             tags = [tags]
+        # 날짜를 안 적었으면 파일을 마지막으로 저장한 날로 채운다.
+        # (옵시디언 템플릿 플레이스홀더가 그대로 남은 경우도 같이 처리)
+        date = str(meta.get("date") or "").strip()
+        if not date or "{{" in date:
+            date = datetime.date.fromtimestamp(f.stat().st_mtime).isoformat()
         notes[slug] = {
             "id": slug,
             "title": title,
             "tags": tags,
-            "date": str(meta.get("date", "")),
+            "date": date,
             "body": body,
             "links": [],
         }
