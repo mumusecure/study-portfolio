@@ -9,6 +9,7 @@ import datetime
 import html
 import re
 import shutil
+import subprocess
 import unicodedata
 from pathlib import Path
 
@@ -128,6 +129,22 @@ def slugify(name):
     return re.sub(r"-{2,}", "-", s).strip("-") or "note"
 
 
+def git_date(path):
+    """그 파일을 마지막으로 건드린 커밋 날짜.
+
+    CI(actions/checkout)는 파일 수정시각을 내려받은 시각으로 덮어쓴다.
+    그래서 mtime 만 믿으면 모든 노트 날짜가 빌드한 날로 뭉개진다.
+    """
+    try:
+        out = subprocess.run(
+            ["git", "log", "-1", "--format=%cs", "--", str(path)],
+            cwd=ROOT, capture_output=True, text=True, timeout=10)
+        d = out.stdout.strip()
+        return d if re.fullmatch(r"\d{4}-\d{2}-\d{2}", d) else ""
+    except Exception:
+        return ""
+
+
 def first_h1(body):
     """본문 맨 위의 `# 제목`만 제목 후보로 본다.
 
@@ -190,7 +207,7 @@ def load_notes():
         # (옵시디언 템플릿 플레이스홀더가 그대로 남은 경우도 같이 처리)
         date = str(meta.get("date") or "").strip()
         if not date or "{{" in date:
-            date = datetime.date.fromtimestamp(f.stat().st_mtime).isoformat()
+            date = git_date(f) or datetime.date.fromtimestamp(f.stat().st_mtime).isoformat()
         notes[slug] = {
             "id": slug,
             "title": title,
