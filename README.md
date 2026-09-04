@@ -82,7 +82,26 @@ draft: true
 
 ## 사이트에 반영
 
-### 방법 1 — GitHub 웹에서 (설치 불필요)
+### 방법 1 — 사이트에서 바로 쓰기 (제일 편함)
+
+https://mumusecure.github.io/study-portfolio/write.html
+
+글을 쓰고 **발행**을 누르면 브라우저가 GitHub 에 직접 커밋한다. 1분쯤 뒤 사이트에 반영된다.
+기존 글을 골라 고치거나 지울 수도 있다. 메인 화면 터미널에 `write` 를 쳐도 열린다.
+
+**처음 한 번만 토큰 등록이 필요하다.** GitHub Pages 는 서버가 없어서 브라우저가 직접
+GitHub API 를 부르기 때문이다.
+
+1. [Fine-grained token 만들기](https://github.com/settings/personal-access-tokens/new)
+2. Repository access → **Only select repositories** → `study-portfolio` 하나만
+3. Permissions → Repository permissions → **Contents** 를 **Read and write** 로
+4. 만료일을 짧게 두고 생성 → 나온 토큰을 write 화면에 붙여넣기
+
+토큰은 그 브라우저에만 저장되고 GitHub 외에는 전송되지 않는다.
+`study-portfolio` 저장소의 파일 쓰기 외에는 아무 권한도 없으므로, 새면 토큰만 폐기하면 된다.
+**공용 컴퓨터에서는 쓰지 말 것.**
+
+### 방법 2 — GitHub 웹에서 (토큰 없이)
 
 1. https://github.com/mumusecure/study-portfolio/tree/main/data/notes 열기
 2. **Add file → Create new file**
@@ -92,7 +111,7 @@ draft: true
 1분쯤 뒤 사이트에 자동 반영된다. 폰에서도 된다.
 저장소 아무 화면에서 `.` 키를 누르면 브라우저 안에서 VS Code 가 열린다(github.dev).
 
-### 방법 2 — 로컬에서
+### 방법 3 — 로컬에서
 
 ```bash
 ./publish.sh              # 빌드 + 커밋 + 푸시

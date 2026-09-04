@@ -6,6 +6,7 @@ data/*.yml + data/notes/*.md 를 읽어 docs/ 에 사이트를 생성한다.
 사용법: python3 scripts/build.py
 """
 import datetime
+import hashlib
 import html
 import re
 import shutil
@@ -51,6 +52,21 @@ NAV = [
 ]
 
 
+def asset_ver():
+    """CSS/JS 내용으로 만든 짧은 해시.
+
+    자산 주소 뒤에 붙여 브라우저가 옛 스타일시트를 계속 쓰는 걸 막는다.
+    """
+    h = hashlib.sha1()
+    for f in sorted(ASSETS.glob("*")):
+        if f.is_file():
+            h.update(f.read_bytes())
+    return h.hexdigest()[:8]
+
+
+ASSET_VER = asset_ver()
+
+
 def esc(s):
     return html.escape(str(s), quote=False)
 
@@ -75,7 +91,7 @@ def page(title, active, body, rel="", extra=""):
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>{esc(title)} — {esc(SITE['nickname'])} study log</title>
-<link rel="stylesheet" href="{rel}assets/style.css">
+<link rel="stylesheet" href="{rel}assets/style.css?v={ASSET_VER}">
 </head>
 <body>
 {extra}
@@ -93,7 +109,7 @@ def page(title, active, body, rel="", extra=""):
 </footer>
 </div>
 <!-- 뭔가 숨겨져 있습니다. 메인 화면의 터미널에서 ls -la -->
-<script src="{rel}assets/main.js"></script>
+<script src="{rel}assets/main.js?v={ASSET_VER}"></script>
 </body>
 </html>"""
 
@@ -648,6 +664,66 @@ def build_about():
     write("about.html", page("whoami", "about.html", body))
 
 
+def build_write():
+    """브라우저에서 글을 써서 바로 커밋하는 콘솔.
+
+    GitHub Pages 는 서버가 없으므로 브라우저가 GitHub API 를 직접 호출한다.
+    내비게이션에는 넣지 않는다 — 방문자용 콘텐츠가 아니라 나만 쓰는 도구다.
+    """
+    gh = str(SITE.get("github", "")).rstrip("/")
+    owner = gh.rsplit("/", 1)[-1] if gh else ""
+    repo = "study-portfolio"
+    site_url = f"https://{owner}.github.io/{repo}/" if owner else "/"
+    cfg = (f'<script>window.WRITE_CFG={{owner:"{owner}",repo:"{repo}",'
+           f'branch:"main",dir:"data/notes",site:"{site_url}"}};</script>'
+           f'<script src="assets/write.js?v={ASSET_VER}"></script>')
+    body = f"""<h1 class="prompt">write --new</h1>
+<p class="subtitle">여기서 쓴 글은 GitHub 에 커밋되고, 1분쯤 뒤 사이트에 나타납니다.</p>
+
+<div class="panel">
+  <p class="panel-title">인증 <span id="w-token-state" class="w-badge warn">토큰 없음</span></p>
+  <div id="w-token-panel">
+    <p class="w-help">이 사이트는 서버가 없어서, 브라우저가 GitHub 에 직접 글을 올립니다.
+    그래서 <b>이 저장소에만 쓸 수 있는 토큰</b>이 필요합니다.</p>
+    <ol class="w-help">
+      <li><a href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener">
+        Fine-grained token 만들기</a> 를 엽니다</li>
+      <li>Repository access → <b>Only select repositories</b> → <code>{esc(repo)}</code> 하나만 선택</li>
+      <li>Permissions → Repository permissions → <b>Contents</b> 를 <b>Read and write</b> 로</li>
+      <li>만료일은 짧게(90일 등) 두고 생성한 뒤, 나온 토큰을 아래에 붙여넣기</li>
+    </ol>
+    <div class="w-row">
+      <input id="w-token" type="password" class="w-input" placeholder="github_pat_..." autocomplete="off">
+      <button id="w-save-token" class="w-btn">저장</button>
+    </div>
+    <p class="w-help dim">토큰은 이 브라우저에만 저장되고 GitHub 외에는 아무 데도 전송되지 않습니다.
+    공용 컴퓨터에서는 쓰지 마세요.</p>
+  </div>
+  <button id="w-forget" class="w-btn ghost" hidden>토큰 지우기</button>
+</div>
+
+<div id="w-editor" hidden>
+  <div class="w-row">
+    <select id="w-list" class="w-input"><option value="">— 새 글 쓰기 —</option></select>
+    <button id="w-template" class="w-btn ghost">템플릿 넣기</button>
+  </div>
+  <div class="w-row">
+    <span class="w-label">파일 이름</span>
+    <input id="w-name" class="w-input" placeholder="격자 기반 암호" autocomplete="off">
+    <span class="w-label dim">.md</span>
+  </div>
+  <textarea id="w-body" class="w-body" spellcheck="false"
+    placeholder="여기에 본문을 씁니다. 형식은 없어도 됩니다.&#10;&#10;제목은 파일 이름에서, 날짜는 자동으로 채워집니다."></textarea>
+  <div class="w-row">
+    <button id="w-publish" class="w-btn primary">발행 (⌘+Enter)</button>
+    <button id="w-delete" class="w-btn danger">삭제</button>
+  </div>
+</div>
+
+<p id="w-status" class="w-status">토큰을 등록하면 시작합니다.</p>"""
+    write("write.html", page("write", "", body, extra=cfg))
+
+
 def build_404():
     body = f"""<h1 class="prompt">cd {{요청한 경로}}</h1>
 <pre class="ascii mascot">{esc(MASCOT)}</pre>
@@ -676,6 +752,8 @@ def copy_assets():
             print(f"  copy  assets/{f.name}")
     # GitHub Pages: Jekyll 처리 비활성화
     (DOCS / ".nojekyll").write_text("")
+    # 글쓰기 콘솔은 나만 쓰는 도구라 검색에 노출시키지 않는다
+    (DOCS / "robots.txt").write_text("User-agent: *\nDisallow: /write.html\n", encoding="utf-8")
 
 
 def main():
@@ -693,6 +771,7 @@ def main():
     build_fails()
     build_me()
     build_about()
+    build_write()
     build_404()
     build_vault()
     print(f"완료: 주간로그 {len(WEEKS)} · 노트 {len(NOTES)} · 논문 {len(PAPERS)} · "

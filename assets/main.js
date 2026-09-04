@@ -75,6 +75,7 @@
         print("  open <페이지> 페이지로 이동 (예: open skills)");
         print("  mumu          마스코트 소환");
         print("  clear         화면 지우기");
+        print("  write         글쓰기 콘솔 열기");
         print("  ...숨겨진 것들은 직접 찾아보세요");
       },
       ls: function (args) {
@@ -103,7 +104,7 @@
       mumu: function () { print(MASCOT); },
       open: function (args) {
         var p = (args[0] || "").replace(".html", "");
-        var pages = { skills: "skills.html", wiki: "wiki/index.html", timeline: "timeline.html", fails: "fails.html", me: "me.html", about: "about.html", logs: "logs.html" };
+        var pages = { skills: "skills.html", wiki: "wiki/index.html", timeline: "timeline.html", fails: "fails.html", me: "me.html", about: "about.html", logs: "logs.html", write: "write.html" };
         if (pages[p]) { print("이동 중..."); location.href = pages[p]; }
         else print("open: " + (args[0] || "?") + ": 그런 페이지 없음");
       },
@@ -111,7 +112,8 @@
       date: function () { print(new Date().toString()); },
       uname: function () { print("MUMU-OS 0.1 study-portfolio x86_64 (사실 그냥 정적 사이트)"); },
       pwd: function () { print("/home/mumu/study"); },
-      exit: function () { print("어딜 나가려고요. 공부해야죠."); }
+      exit: function () { print("어딜 나가려고요. 공부해야죠."); },
+      write: function () { print("글쓰기 콘솔로 이동합니다..."); location.href = "write.html"; }
     };
     var runCommand = function () {
       var raw = termIn.value.trim();
