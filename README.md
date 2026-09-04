@@ -82,12 +82,27 @@ draft: true
 
 ## 사이트에 반영
 
+### 방법 1 — GitHub 웹에서 (설치 불필요)
+
+1. https://github.com/mumusecure/study-portfolio/tree/main/data/notes 열기
+2. **Add file → Create new file**
+3. 파일 이름에 `제목.md`, 아래 칸에 본문
+4. **Commit changes**
+
+1분쯤 뒤 사이트에 자동 반영된다. 폰에서도 된다.
+저장소 아무 화면에서 `.` 키를 누르면 브라우저 안에서 VS Code 가 열린다(github.dev).
+
+### 방법 2 — 로컬에서
+
 ```bash
 ./publish.sh              # 빌드 + 커밋 + 푸시
 ./publish.sh "메시지"      # 커밋 메시지 지정
 ```
 
-첫 실행 때 빌드용 `.venv` 를 자동으로 만든다. 실행 후 1분쯤 지나면 사이트에 뜬다.
+첫 실행 때 빌드용 `.venv` 를 자동으로 만든다.
+
+사실 `git push` 만 해도 GitHub 이 알아서 빌드·배포한다(`.github/workflows/deploy.yml`).
+`publish.sh` 는 올리기 전에 로컬에서 확인하고 싶을 때 쓰면 된다.
 
 ## 주간 루틴 (15분 상한)
 
